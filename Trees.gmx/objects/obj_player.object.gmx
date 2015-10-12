@@ -34,22 +34,36 @@ d3d_set_fog(true,c_black,5,170);
 draw_set_alpha_test(true);
 draw_set_alpha_test_ref_value(40);
 
-gamepad_set_axis_deadzone(0,0.1);
+//gamepad_set_axis_deadzone(0,0.1);
 x=x;
 
 x = x;
 y = y;
-z = 70;
+z = 50;
 
 xnext = x;
 ynext = y;
 znext = z;
 
-pad_num = 0;
+//pad_num = 0;
 
 direction = 0;
 image_speed = 0.15;
+//////////////////////////////////////////////////////
 
+global.tilesize = 64;
+bounds = 9;    //how many tiles wide and tall the floor will be
+prevxtile = floor(x/global.tilesize);   //convert the x coordinate from being in pixels to being in tiles
+prevytile = floor(y/global.tilesize);   //convert the y coordinate from being in pixels to being in tiles
+
+
+//place the tiles neatly around the player in a grid pattern
+var _x,_y;
+for(_x=0;_x&lt;bounds;_x+=1) {
+    for(_y=0;_y&lt;bounds;_y+=1) {
+        instance_create(x+(-bounds/2+_x)*global.tilesize,y+(-bounds/2+_y)*global.tilesize,obj_grass);
+    }
+}
 </string>
           </argument>
         </arguments>
@@ -73,15 +87,24 @@ image_speed = 0.15;
           <argument>
             <kind>1</kind>
             <string>friction = .5;
-
+/*
 if (gamepad_is_connected(0))
 {
     speed =  gamepad_axis_value (0, gp_axislh) * 1.5
     speed = -gamepad_axis_value (0, gp_axislv) * 1.5
 }
+*/
 
-if keyboard_check(ord("W")) then speed = 1.5;
-if keyboard_check(ord("S")) then speed = -1.5;
+if keyboard_check(vk_lshift)
+{
+    if keyboard_check(ord("W")) then speed = 6;
+    if keyboard_check(ord("S")) then speed = -6;
+}
+else
+{
+    if keyboard_check(ord("W")) then speed = 1.5;
+    if keyboard_check(ord("S")) then speed = -1.5;
+}
 
 if keyboard_check(ord("D"))
 {
@@ -101,9 +124,36 @@ if keyboard_check(ord("A"))
     { x = xn; y = yn; }
 }
 
-if keyboard_check(vk_delete)
+if keyboard_check(vk_escape)
 {
     game_end();
+}
+//////////////////////////////////////// infinite terrain
+
+if (floor(x/global.tilesize) != prevxtile || floor(y/global.tilesize) != prevytile) 
+{
+    prevxtile = floor(x/global.tilesize);   //convert the x coordinate from being in pixels to being in tiles
+    prevytile = floor(y/global.tilesize);   //convert the y coordinate from being in pixels to being in tiles
+    
+    with(obj_grass) {//for all instances of floorTile do the following code
+        var xdist,ydist;//create temporary variables
+        
+        xdist = (other.x-x)/global.tilesize;//get distance (in tiles) to the player on the x axis
+        ydist = (other.y-y)/global.tilesize;//get distance (in tiles) to the player on the y axis
+        
+        //if its so far away that its at the edge of the bounding box, move it to the other side of the bounding box (x axis)
+        if (xdist&gt;other.bounds/2) {
+            x += other.bounds*global.tilesize;
+        } else if (xdist&lt;-other.bounds/2) {
+            x -= other.bounds*global.tilesize;
+        }
+        //if its so far away that its at the edge of the bounding box, move it to the other side of the bounding box (y axis)
+        if (ydist&gt;other.bounds/2) {
+            y += other.bounds*global.tilesize;
+        } else if (ydist&lt;-other.bounds/2) {
+            y -= other.bounds*global.tilesize;
+        }
+    }
 }
 </string>
           </argument>
@@ -136,7 +186,7 @@ ynext=lengthdir_y(200,direction)+y;
 draw_set_color(c_white);
 d3d_set_projection_ext(x,y,z,xnext,ynext,znext,0,0,1,45,320/180,1,16000)
 
-d3d_draw_floor(0,0,0,room_width,room_height,0,background_get_texture(bg_grass),room_width/64,room_height/64)
+//d3d_draw_floor(0,0,0,room_width,room_height,0,background_get_texture(bg_grass),room_width/64,room_height/64)
 
 </string>
           </argument>
