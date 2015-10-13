@@ -29,7 +29,7 @@
 d3d_set_culling(false);
 d3d_set_lighting(false);
 d3d_set_hidden(false);
-d3d_set_fog(true,c_black,5,170);
+d3d_set_fog(true,$000F0E,200,300);
 
 draw_set_alpha_test(true);
 draw_set_alpha_test_ref_value(40);
@@ -52,7 +52,7 @@ image_speed = 0.15;
 //////////////////////////////////////////////////////
 
 global.tilesize = 64;
-bounds = 9;    //how many tiles wide and tall the floor will be
+bounds = 20;    //how many tiles wide and tall the floor will be
 prevxtile = floor(x/global.tilesize);   //convert the x coordinate from being in pixels to being in tiles
 prevytile = floor(y/global.tilesize);   //convert the y coordinate from being in pixels to being in tiles
 
@@ -144,12 +144,50 @@ if (floor(x/global.tilesize) != prevxtile || floor(y/global.tilesize) != prevyti
         //if its so far away that its at the edge of the bounding box, move it to the other side of the bounding box (x axis)
         if (xdist&gt;other.bounds/2) {
             x += other.bounds*global.tilesize;
-        } else if (xdist&lt;-other.bounds/2) {
+            if (random(10)&gt;9)
+            {
+                instance_change(obj_other, false);
+            }
+        } 
+        else if (xdist&lt;-other.bounds/2) {
             x -= other.bounds*global.tilesize;
         }
         //if its so far away that its at the edge of the bounding box, move it to the other side of the bounding box (y axis)
         if (ydist&gt;other.bounds/2) {
             y += other.bounds*global.tilesize;
+            if (random(10)&gt;9)
+            {
+                instance_change(obj_other, false);
+            }
+        } else if (ydist&lt;-other.bounds/2) {
+            y -= other.bounds*global.tilesize;
+        }
+    }
+    
+    with(obj_other) {//for all instances of floorTile do the following code
+        var xdist,ydist;//create temporary variables
+        
+        xdist = (other.x-x)/global.tilesize;//get distance (in tiles) to the player on the x axis
+        ydist = (other.y-y)/global.tilesize;//get distance (in tiles) to the player on the y axis
+        
+        //if its so far away that its at the edge of the bounding box, move it to the other side of the bounding box (x axis)
+        if (xdist&gt;other.bounds/2) {
+            x += other.bounds*global.tilesize;
+            if (random(10)&lt;8)
+            {
+                instance_change(obj_grass, false);
+            }
+        } 
+        else if (xdist&lt;-other.bounds/2) {
+            x -= other.bounds*global.tilesize;
+        }
+        //if its so far away that its at the edge of the bounding box, move it to the other side of the bounding box (y axis)
+        if (ydist&gt;other.bounds/2) {
+            y += other.bounds*global.tilesize;
+            if (random(10)&lt;8)
+            {
+                instance_change(obj_grass, false);
+            }
         } else if (ydist&lt;-other.bounds/2) {
             y -= other.bounds*global.tilesize;
         }

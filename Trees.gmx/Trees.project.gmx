@@ -15,6 +15,7 @@
   <objects name="objects">
     <object>objects\obj_player</object>
     <object>objects\obj_grass</object>
+    <object>objects\obj_other</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\woods</room>
